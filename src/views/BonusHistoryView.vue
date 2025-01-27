@@ -1,6 +1,5 @@
 <template>
-<div class="main-content">
-  <div>
+  <div class="main-content">
     <!-- 顯示用戶名稱和點數區塊 -->
     <div v-if="isLoggedIn" class="user-info">
       <span>{{ username }} 您好！</span>
@@ -10,80 +9,32 @@
       <span>請先登入！</span>
     </div>
 
-    <!-- Navbar with Search -->
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-      <div class="container-fluid">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item" v-for="(tab, index) in tabs" :key="tab.name">
-              <a 
-                class="nav-link" 
-                :class="{ active: currentIndex === index }" 
-                href="#"
-                @click.prevent="click(index)"
-              >
-                {{ tab.name }}
-              </a>
-            </li>
-          </ul>
-          <form class="d-flex align-items-center" role="search" @submit.prevent="handleSearch">
-            <input 
-              class="form-control me-2" 
-              type="search" 
-              placeholder="搜尋商品" 
-              aria-label="Search"
-              v-model="searchKeyword"
-              style="width: 200px;" 
-            />
-            <button class="btn btn-outline-success" type="submit" style="width: 80px;">搜尋</button> <!-- 設定按鈕寬度 -->
-          </form>
-        </div>
-      </div>
-    </nav>
-  </div>
-    <!-- 顯示當前選擇的 tab -->
-    <KeepAlive>
-      <component 
-        :is="currentTab" 
-        :searchKeyword="searchKeyword"
-        :exchangeProduct="exchangeProduct"
-        :userPoints="userPoints"
-        :isLoggedIn="isLoggedIn"
-      />
-    </KeepAlive>
+    <!-- 顯示兌換紀錄區域 -->
+    <div v-if="isLoggedIn" class="exchange-history">
+      <h3>您的兌換紀錄</h3>
+      <table v-if="exchangeHistory.length > 0" class="table table-striped">
+        <thead>
+          <tr>
+            <th>商品名稱</th>
+            <th>消耗點數</th>
+            <th>兌換日期</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(record, index) in exchangeHistory" :key="index">
+            <td>{{ record.productname }}</td>
+            <td>{{ record.cost }}</td>
+            <td>{{ record.date }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p v-else>目前沒有兌換紀錄。</p>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-
-// 引入子組件
-import FeaturedProductComponent from '@/components/FeaturedProductComponent.vue';
-import AllBonusMallProductComponent from '@/components/AllBonusMallProductComponent.vue';
-import LifeProductComponent from '@/components/LifeProductComponent.vue';
-import StarbuckProductComponent from '@/components/StarbuckProductComponent.vue';
-import TrafficProductComponent from '@/components/TrafficProductComponent.vue';
-import SearchResultComponent from '@/components/SearchResultComponent.vue';
-
-// Tab選項
-const tabs = ref([
-    { name: '精選商品', component: FeaturedProductComponent },
-    { name: '全部商品', component: AllBonusMallProductComponent },
-    { name: '便利生活', component: LifeProductComponent },
-    { name: '星巴克', component: StarbuckProductComponent },
-    { name: '旅遊交通', component: TrafficProductComponent },
-    { name: '', component: SearchResultComponent }, // 搜尋結果 tab 不顯示文字
-]);
-
-// 當前選中的 tab 索引
-const currentIndex = ref(0);
-const currentTab = ref(tabs.value[0].component);
-
-// 搜尋關鍵字
-const searchKeyword = ref('');
 
 // 用戶點數
 const userPoints = ref(0);
@@ -97,19 +48,8 @@ const email = sessionStorage.getItem('email');
 // 控制是否顯示登入提示
 const isLoggedIn = ref(!!email); // 如果有email，表示已登入
 
-// 切換選項
-const click = idx => {
-    currentIndex.value = idx;
-    currentTab.value = tabs.value[idx].component;
-};
-
-// 處理搜尋
-const handleSearch = () => {
-    if (searchKeyword.value) {
-        currentIndex.value = tabs.value.length - 1; // 切換到搜尋結果 tab
-        currentTab.value = SearchResultComponent; // 顯示搜尋結果組件
-    }
-};
+// 兌換紀錄
+const exchangeHistory = ref([]);
 
 // 獲取用戶點數
 const getUserPoints = async () => {
@@ -124,111 +64,100 @@ const getUserPoints = async () => {
     }
 };
 
-// 在組件加載時取得用戶點數
+// 獲取用戶的兌換紀錄
+const getExchangeHistory = async () => {
+    try {
+        const response = await fetch(`http://localhost:8081/api/bonushistory/history?email=${email}`);
+        const data = await response.json();
+        if (data && Array.isArray(data)) {
+            exchangeHistory.value = data; // 更新兌換紀錄
+        }
+    } catch (error) {
+        console.error("獲取兌換紀錄錯誤:", error);
+    }
+};
+
+// 在組件加載時取得用戶點數和兌換紀錄
 onMounted(() => {
     if (isLoggedIn.value) {
         getUserPoints();
+        getExchangeHistory();
     }
 });
-
-// 兌換商品的邏輯
-const exchangeProduct = (productno) => {
-    // if (!email) {
-    //     alert('請先登入！');
-    //     return;
-    // }
-
-    fetch(`http://localhost:8081/api/points/exchange?email=${email}&productno=${productno}`, {
-        method: 'POST', 
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                //alert('兌換成功！');
-                getUserPoints(); // 更新點數
-            } else {
-                alert('兌換失敗，請稍後再試！');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('兌換過程中發生錯誤，請稍後再試！');
-        });
-};
 </script>
 
 <style scoped>
-.card {
-  margin-bottom: 20px;
-  border: none;
-   background: transparent !important;
+/* 主要內容區塊 */
+.main-content {
+  padding-top: 50px; /* 調整距離，讓頁面內容不會被 header 擋住 */
+  text-align: center; /* 使所有內容集中在中間 */
+  max-width: 1200px; /* 設置最大寬度 */
+  margin-left: auto;
+  margin-right: auto; /* 使主內容區域居中 */
+  padding: 0 20px; /* 增加左右邊距 */
 }
 
-.product-image-wrapper {
-  border: 2px solid #007BFF;
-  padding: 5px;
+/* 兌換紀錄區塊 */
+.exchange-history {
+  margin-top: 40px; /* 增加頂部間距 */
+  padding: 20px; /* 增加內邊距 */
+  background-color: #f9f9f9; /* 兌換紀錄區塊背景顏色 */
+  border-radius: 8px; /* 使區塊有圓角 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 添加陰影效果 */
+  width: 100%; /* 確保區域最大化顯示 */
+  max-width: 1000px; /* 設定最大寬度，防止過寬 */
+  margin-left: auto;
+  margin-right: auto; /* 居中顯示 */
 }
 
-.product-image {
-  width: 100px;
-  height: auto;
+/* 表格樣式 */
+table {
+  width: 100%; /* 使表格佔據整個容器寬度 */
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto; /* 使表格居中 */
+  border-collapse: collapse;
 }
 
-.point-img {
-  width: 20px;
-  height: auto;
-  margin-right: 5px;
+/* 文字處理 */
+th, td {
+  text-align: center;
+  padding: 12px; /* 增加內邊距，讓表格更易讀 */
+  word-wrap: break-word; /* 讓長字自動換行 */
 }
 
-.point-text {
-  font-size: 18px;
+th {
+  background-color: #007BFF; /* 表格標題背景顏色 */
+  color: white; /* 表格標題文字顏色 */
+  font-size: 18px; /* 調整標題字體大小 */
 }
 
-.card-title {
-  font-size: 14px;
+td {
+  font-size: 16px; /* 調整表格內容字體大小 */
 }
 
-.navbar-nav .nav-item .nav-link.active {
-  color: #007BFF;
-}
-
-.navbar-nav .nav-item .nav-link {
-  min-width: 100px; /* Tab 寬度 */
-  text-align: center; /* 文字置中 */
+tr:nth-child(even) {
+  background-color: #f1f1f1; /* 偶數行背景顏色 */
 }
 
 /* 顯示點數的樣式 */
 .points-display {
-  font-size: 18px;
+  font-size: 22px; /* 增大字體大小 */
   font-weight: bold;
-  color: #DB5009; /* 這裡可以自定義顏色 */
+  color: #DB5009; /* 這裡是點數顏色，改成橘色 */
   margin-left: 10px;
 }
 
+/* 用戶資訊區塊 */
 .user-info {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center; /* 中央對齊 */
   align-items: center;
-  font-size: 20px;
+  font-size: 22px; /* 增大字體 */
   padding: 10px;
-  background-color: #f5f5f5; /* 背景顏色，可以根據需求修改 */
-  margin-bottom: 10px; /* 留出空間讓這個區塊和其他區塊分開 */
+  background-color: #f5f5f5; /* 背景顏色 */
+  margin-bottom: 20px; /* 增加底部空隙 */
   font-weight: bold;
-}
-
-.navbar-text {
-  display: flex;
-  align-items: center;
-  font-size: 18px;
-  color: #000; /* 可根據需求設定顏色 */
-}
-
-.user-info {
-  background: transparent !important; /* 確保內部元素也保持透明 */
-}
-
-.main-content {
-  padding-top: 70px; /* 根據 header 高度設置適當的間距 */
 }
 
 </style>
