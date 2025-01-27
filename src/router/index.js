@@ -13,6 +13,8 @@ import MemberInformation from "@/views/MemberInformation.vue";
 import MembersPassword from "@/views/MembersPassword.vue"
 import MemberVerifyCode from "@/views/MemberVerifyCode.vue";
 import BonusMallView from "@/views/BonusMallView.vue";
+import BonusHistoryView from "@/views/BonusHistoryView.vue";
+
 const routes = [
 
   {
@@ -67,6 +69,11 @@ const routes = [
     path: "/bounsmall", // 相對路徑
     name: "bounsmall",
     component: BonusMallView,
+  },
+  {
+    path: "/bounshistory", // 相對路徑
+    name: "bounshistory",
+    component: BonusHistoryView,
   },
 
 

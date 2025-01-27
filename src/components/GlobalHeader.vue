@@ -8,15 +8,35 @@
         <p class="subtitle">Your safety, our priority</p>
       </div>
     </div>
+
+    <!--Zack 修改-->
     <nav class="header-menu">
-      <router-link 
-        v-for="item in menuItems" 
-        :key="item.key" 
-        :to="item.link" 
-        class="menu-item"
-      >
-        {{ item.label }}
-      </router-link>
+      <template v-for="item in menuItems" :key="item.key">
+        <!-- 如果是紅利商城，顯示下拉選單 -->
+        <a-dropdown v-if="item.key === 'bouns'">
+          <template #overlay>
+            <a-menu>
+              <a-menu-item key="bounsMall">
+                <router-link to="/bounsmall">紅利商城</router-link>
+              </a-menu-item>
+              <a-menu-item key="exchangeRecords">
+                <router-link to="/bounshistory">兌換紀錄</router-link>
+              </a-menu-item>
+            </a-menu>
+          </template>
+          <a-button type="text" class="bonus-dropdown-btn">
+            {{ item.label }} <!--<DownOutlined />-->
+          </a-button>
+        </a-dropdown>
+
+        <!-- 其他項目則直接顯示為常規的 router-link -->
+        <router-link v-else :to="item.link" class="menu-item">
+          {{ item.label }}
+        </router-link>
+      </template>
+      <!--Zack 修改-->
+    
+
     </nav>
     <div class="header-right">
   <a-dropdown>
@@ -197,4 +217,40 @@ const handleLogout = () => {
   font-size: 1.2rem; 
   color: #2d572c; 
 }
+
+
+/*Zack 修改*/
+
+/* 只修改紅利商城的樣式，讓它跟其他tab一致 */
+.bonus-dropdown-btn {
+  display: inline-flex; /* 確保文字與圖標並排 */
+  align-items: center; /* 垂直對齊 */
+  justify-content: center; /* 水平居中對齊 */
+  color: #2d572c; /* 預設文字顏色 */
+  font-size: 1.2rem; /* 字體大小一致 */
+  font-weight: 700; /* 字重加粗 */
+  transition: all 0.3s ease; /* 平滑過渡 */
+  padding: 0; /* 去除內邊距 */
+  text-transform: uppercase; /* 大寫字母 */
+  border: none; /* 去除邊框 */
+  background: none; /* 去除背景 */
+  height: auto; /* 高度自適應 */
+}
+
+/* 統一懸停效果：與其他tab一致，不顯示灰色背景 */
+.bonus-dropdown-btn:hover {
+  color: #155724; /* 懸停文字顏色 */
+  transform: scale(1.1); /* 放大效果 */
+  background: none !important; /* 確保懸停時沒有背景 */
+}
+
+/* 保證按鈕和其他tab的對齊一致 */
+.menu-item, .bonus-dropdown-btn {
+  display: inline-flex;  /* 使用 inline-flex 保證項目在行內對齊 */
+  align-items: center;    /* 垂直對齊 */
+  justify-content: center;/* 水平居中對齊 */
+}
+
+/*Zack 修改*/
+
 </style>
