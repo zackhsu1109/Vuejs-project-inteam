@@ -9,7 +9,7 @@
       </div>
     </div>
 
-    <!--Zack 修改-->
+    <!--紅利商城 修改-->
     <nav class="header-menu">
       <template v-for="item in menuItems" :key="item.key">
         <!-- 如果是紅利商城，顯示下拉選單 -->
@@ -34,7 +34,7 @@
           {{ item.label }}
         </router-link>
       </template>
-      <!--Zack 修改-->
+      <!--紅利商城 修改-->
     
 
     </nav>
@@ -219,7 +219,7 @@ const handleLogout = () => {
 }
 
 
-/*Zack 修改*/
+/*紅利商城 修改*/
 
 /* 只修改紅利商城的樣式，讓它跟其他tab一致 */
 .bonus-dropdown-btn {
@@ -251,6 +251,6 @@ const handleLogout = () => {
   justify-content: center;/* 水平居中對齊 */
 }
 
-/*Zack 修改*/
+/*紅利商城 修改*/
 
 </style>

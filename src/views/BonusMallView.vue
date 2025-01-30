@@ -188,31 +188,56 @@ const exchangeProduct = (productno) => {
   font-size: 14px;
 }
 
-.navbar-nav .nav-item .nav-link.active {
-  color: #007BFF;
-}
-
+/* Navbar的按鈕變成區塊變色效果 */
 .navbar-nav .nav-item .nav-link {
   min-width: 100px; /* Tab 寬度 */
   text-align: center; /* 文字置中 */
+  font-weight: bold; /* 文字粗體 */
+  font-size: 16px; /* 字體大小 */
+  color: #8a9a5b; /* 預設文字顏色 */
+  text-transform: uppercase; /* 文字大寫 */
+  letter-spacing: 1px; /* 增加字母間距 */
+  padding: 10px 15px; /* 增加內邊距 */
+  margin-right: 10px; /* 增加右邊間隔，避免按鈕黏在一起 */
+  transition: background-color 0.3s ease; /* 加入過渡效果 */
 }
 
-/* 顯示點數的樣式 */
+/* 當按鈕被選中時的區塊背景顏色 */
+.navbar-nav .nav-item .nav-link.active {
+  background-color: #8a9a5b; /* 設置選中狀態的背景顏色為灰綠色 */
+  color: #fff; /* 選中狀態文字顏色為白色 */
+  border-radius: 4px; /* 圓角效果 */
+}
+
+/* 當按鈕被懸停時的效果 */
+.navbar-nav .nav-item .nav-link:hover {
+  background-color: #b2c7a1; /* 懸停狀態的背景顏色 */
+  color: #fff; /* 懸停狀態文字顏色為白色 */
+  border-radius: 4px; /* 圓角效果 */
+}
+
+/* 顯示點數的樣式設定為灰綠色 */
 .points-display {
   font-size: 18px;
   font-weight: bold;
-  color: #DB5009; /* 這裡可以自定義顏色 */
+  color: #8a9a5b; /* 修改點數顏色為灰綠色 */
   margin-left: 10px;
 }
 
+/* Navbar 背景顏色改為灰綠色 */
+.navbar {
+  background-color: #d1e0d0; /* 背景顏色設定為灰綠色 */
+}
+
+/* 顯示用戶名稱區塊背景顏色為淡灰綠 */
 .user-info {
   display: flex;
   justify-content: flex-start;
   align-items: center;
   font-size: 20px;
   padding: 10px;
-  background-color: #f5f5f5; /* 背景顏色，可以根據需求修改 */
-  margin-bottom: 10px; /* 留出空間讓這個區塊和其他區塊分開 */
+  background-color: #e3f0e1; /* 淡灰綠色背景 */
+  margin-bottom: 10px;
   font-weight: bold;
 }
 
@@ -225,6 +250,14 @@ const exchangeProduct = (productno) => {
 
 .user-info {
   background: transparent !important; /* 確保內部元素也保持透明 */
+}
+
+/* 顯示點數的樣式設定為橘色 */
+.points-display {
+  font-size: 18px;
+  font-weight: bold;
+  color: #DB5009; /* 修改點數顏色為橘色 */
+  margin-left: 10px;
 }
 
 .main-content {

@@ -99,7 +99,7 @@ onMounted(() => {
 
 /* 兌換紀錄區塊 */
 .exchange-history {
-  margin-top: 40px; /* 增加頂部間距 */
+  margin-top: 10px; /* 增加頂部間距 */
   padding: 20px; /* 增加內邊距 */
   background-color: #f9f9f9; /* 兌換紀錄區塊背景顏色 */
   border-radius: 8px; /* 使區塊有圓角 */
@@ -126,9 +126,10 @@ th, td {
   word-wrap: break-word; /* 讓長字自動換行 */
 }
 
+/* 表格標題背景顏色修改 */
 th {
-  background-color: #007BFF; /* 表格標題背景顏色 */
-  color: white; /* 表格標題文字顏色 */
+  background-color: #8A9A5B; /* 表格標題背景顏色改為 #155724 */
+  color: white; /* 保持字體顏色為白色 */
   font-size: 18px; /* 調整標題字體大小 */
 }
 
