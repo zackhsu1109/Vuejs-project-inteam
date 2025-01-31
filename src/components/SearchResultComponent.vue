@@ -120,16 +120,17 @@ export default {
       this.currentPage = page; // 跳轉到指定的頁碼
     },
     handleExchange(product) {
-       // 檢查是否登入
+      // 檢查是否登入
       if (!this.isLoggedIn) {
         Swal.fire({
-        icon: 'info',
-        title: '請先登入！',
-        text: '您需要登入才能兌換商品。',
-        confirmButtonText: '確定'
+          icon: 'info',
+          title: '請先登入！',
+          text: '您需要登入才能兌換商品。',
+          confirmButtonColor: '#2894FF',
+          confirmButtonText: '確定'
         }).then(() => {
-      // 點擊確定後跳轉到登入頁面
-      this.$router.push('/membersLogin'); // 登入頁面的路由
+          // 點擊確定後跳轉到登入頁面
+          this.$router.push('/membersLogin'); // 登入頁面的路由
         });
         return; // 結束方法，不再執行兌換邏輯
       }
@@ -140,6 +141,7 @@ export default {
           icon: 'error',
           title: '點數不足',
           text: `您目前的點數不足，無法兌換此商品。`,
+          confirmButtonColor: '#FF5151',
           confirmButtonText: '確定'
         });
         return; // 結束方法，不再執行兌換邏輯
@@ -151,10 +153,10 @@ export default {
         text: `這個商品需要 ${product.cost} 點數。`,
         icon: 'question',
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
+        confirmButtonColor: '#2894FF',
+        cancelButtonColor: '#FF5151',
         confirmButtonText: '確認',
-        cancelButtonText: '取消'
+        cancelButtonText: '取消',
       }).then((result) => {
         if (result.isConfirmed) {
           // 用戶點擊確認兌換，執行兌換操作
