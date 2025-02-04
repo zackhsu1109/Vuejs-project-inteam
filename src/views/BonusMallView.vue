@@ -1,49 +1,52 @@
 <template>
-<div class="main-content">
-  <div>
-    <!-- 顯示用戶名稱和點數區塊 -->
-    <div v-if="isLoggedIn" class="user-info">
-      <span>{{ username }} 您好！</span>
-      <span class="points-display">剩餘點數: {{ userPoints }} 點</span>
-    </div>
-    <div v-else class="user-info">
-      <span>請先登入！</span>
-    </div>
-
-    <!-- Navbar with Search -->
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-      <div class="container-fluid">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item" v-for="(tab, index) in tabs" :key="tab.name">
-              <a 
-                class="nav-link" 
-                :class="{ active: currentIndex === index }" 
-                href="#"
-                @click.prevent="click(index)"
-              >
-                {{ tab.name }}
-              </a>
-            </li>
-          </ul>
-          <form class="d-flex align-items-center" role="search" @submit.prevent="handleSearch">
-            <input 
-              class="form-control me-2" 
-              type="search" 
-              placeholder="搜尋商品" 
-              aria-label="Search"
-              v-model="searchKeyword"
-              style="width: 200px;" 
-            />
-            <button class="btn btn-outline-success" type="submit" style="width: 80px;">搜尋</button> <!-- 設定按鈕寬度 -->
-          </form>
-        </div>
+  <div class="main-content">
+    <div>
+      <!-- 顯示用戶名稱和點數區塊 -->
+      <div v-if="isLoggedIn" class="user-info">
+        <span>{{ username }} 您好！</span>
+        <span class="points-display">剩餘點數: {{ userPoints }} 點</span>
       </div>
-    </nav>
-  </div>
+      <div v-else class="user-info">
+        <span>請先登入！</span>
+      </div>
+
+      <!-- Navbar with Search -->
+      <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item" v-for="(tab, index) in tabs" :key="tab.name">
+                <a 
+                  class="nav-link" 
+                  :class="{ 
+                    active: currentIndex === index, 
+                    'no-style': !tab.name // 只對名稱為空的 tab 設置 no-style 類
+                  }" 
+                  href="#"
+                  @click.prevent="click(index)"
+                >
+                  {{ tab.name || '' }} <!-- 搜尋結果 tab 會顯示空白 -->
+                </a>
+              </li>
+            </ul>
+            <form class="d-flex align-items-center" role="search" @submit.prevent="handleSearch">
+              <input 
+                class="form-control me-2" 
+                type="search" 
+                placeholder="搜尋商品" 
+                aria-label="Search"
+                v-model="searchKeyword"
+                style="width: 200px;" 
+              />
+              <button class="btn btn-outline-success" type="submit" style="width: 80px;">搜尋</button> <!-- 設定按鈕寬度 -->
+            </form>
+          </div>
+        </div>
+      </nav>
+    </div>
     <!-- 顯示當前選擇的 tab -->
     <KeepAlive>
       <component 
@@ -133,18 +136,12 @@ onMounted(() => {
 
 // 兌換商品的邏輯
 const exchangeProduct = (productno) => {
-    // if (!email) {
-    //     alert('請先登入！');
-    //     return;
-    // }
-
     fetch(`http://localhost:8081/api/points/exchange?email=${email}&productno=${productno}`, {
         method: 'POST', 
     })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                //alert('兌換成功！');
                 getUserPoints(); // 更新點數
             } else {
                 alert('兌換失敗，請稍後再試！');
@@ -161,7 +158,7 @@ const exchangeProduct = (productno) => {
 .card {
   margin-bottom: 20px;
   border: none;
-   background: transparent !important;
+  background: transparent !important;
 }
 
 .product-image-wrapper {
@@ -216,6 +213,19 @@ const exchangeProduct = (productno) => {
   border-radius: 4px; /* 圓角效果 */
 }
 
+/* 僅針對沒有名稱的搜尋結果tab禁用背景顏色和懸浮效果 */
+.navbar-nav .nav-item .nav-link.no-style {
+  background-color: transparent !important; /* 禁止背景顏色 */
+  color: transparent !important; /* 隱藏文字顏色 */
+  border: none !important; /* 移除邊框 */
+  pointer-events: none; /* 禁止點擊 */
+}
+
+/* 讓搜尋結果 tab 在懸停時不顯示任何效果 */
+.navbar-nav .nav-item .nav-link.no-style:hover {
+  background-color: transparent !important; /* 禁止懸停背景色 */
+}
+
 /* 顯示點數的樣式設定為灰綠色 */
 .points-display {
   font-size: 18px;
@@ -263,5 +273,4 @@ const exchangeProduct = (productno) => {
 .main-content {
   padding-top: 70px; /* 根據 header 高度設置適當的間距 */
 }
-
 </style>
